@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35506.116
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRUDPersonas", "CRUDPersonas\CRUDPersonas.csproj", "{8CE8AB43-2B3D-4570-AECA-F0A77E29700A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRUDApi", "CRUDApi\CRUDApi.csproj", "{EFCFDA71-9C55-449D-B676-B4CE6D6D159F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8CE8AB43-2B3D-4570-AECA-F0A77E29700A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CE8AB43-2B3D-4570-AECA-F0A77E29700A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CE8AB43-2B3D-4570-AECA-F0A77E29700A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CE8AB43-2B3D-4570-AECA-F0A77E29700A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFCFDA71-9C55-449D-B676-B4CE6D6D159F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFCFDA71-9C55-449D-B676-B4CE6D6D159F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFCFDA71-9C55-449D-B676-B4CE6D6D159F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFCFDA71-9C55-449D-B676-B4CE6D6D159F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

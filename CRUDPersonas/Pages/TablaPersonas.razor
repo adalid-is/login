@@ -1,0 +1,191 @@
+﻿@page "/staticgrid"
+@using CRUDPersonas.Dto
+@using CRUDPersonas.Layout
+@using CRUDPersonas.Pages
+@using System.Text.Json
+@using System.IO
+@inject HttpClient Http
+
+<PageTitle>Peoples</PageTitle>
+
+<h1>Peoples</h1>
+
+
+@using Telerik.DataSource;
+
+
+<h3>Clientes</h3>
+
+<div class="container-fluid my-3 py-3">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mt-4" id="basic-info">
+                <div class="card-body pt-0">
+                    <div class="row">
+                        <div class="col-sm-2 col-2">
+                            <div class="input-group input-group-static">
+                                <label>Top</label>
+                                <TelerikNumericTextBox Min="0" Class="form-control" @bind-Value="@id" />
+                            </div>
+                        </div>
+                    </div><br />
+                    <div class="col-4">
+                        <button class="btn btn-primary" type="button" @onclick="@MostrarDatos">Ver Datos</button>
+
+                    </div>
+                    <div class="col-3">
+                        <label class="k-checkbox-label"><TelerikCheckBox @bind-Value="@ExportAllPages" />Export All Pages</label>
+                        <TelerikButton OnClick="@(async () => await GridRef.SaveAsExcelFileAsync())">Descarga Excel</TelerikButton>
+
+                    </div>
+                </div>
+                <div class="m-4 mt-0">
+
+                    <TelerikGrid @ref="@GridRef"
+                    Data="@personas"
+                    OnUpdate="@UpdateHandler"
+                    OnDelete="@DeleteHandler"
+                    OnCreate="@CreateHandler"
+                    ConfirmDelete="true"
+                    Groupable="true"
+                    FilterMode="GridFilterMode.FilterMenu"
+                    Resizable="true"
+                    Reorderable="true"
+                    EditMode="GridEditMode.Popup"
+                    Height="350px"
+                    Sortable="true"
+                    SortMode="@SortMode.Single"
+                    Pageable="true"
+                    PageSize="10">
+
+                        <GridExport>
+                            <GridExcelExport FileName="telerik-grid-export" AllPages="@ExportAllPages" />
+                        </GridExport>
+
+
+
+                        <GridColumns>
+                            <GridColumn Field="@nameof(PeopleDto.Id)" Width="5%" Title="Id" Lockable="true" Editable="false" />
+                            <GridColumn Field="@nameof(PeopleDto.FirstName)" Width="11%" Title="Nombre" Editable="true" />
+                            <GridColumn Field="@nameof(PeopleDto.LastName)" Width="11%" Title="Apellido" Editable="true" />
+                            <GridColumn Field="@nameof(PeopleDto.Age)" Width="11%" Title="Edad" Editable="true" />
+                            <GridColumn Field="@nameof(PeopleDto.Nationality)" Width="11%" Title="Nacionalidad" Editable="true" />
+                            <GridColumn Field="@nameof(PeopleDto.Address)" Width="13%" Title="Dirección" Editable="true" />
+                            <GridColumn Field="@nameof(PeopleDto.PostalCode)" Width="11%" Title="Código Postal" Editable="true" />
+                            <GridColumn Field="@nameof(PeopleDto.CityDescription)" Width="11%" Title="Ciudad" Editable="true" />
+                            <GridColumn Field="@nameof(PeopleDto.ProvinceDescription)" Width="5%" Title="Provincia" Editable="true" />
+                            <GridCommandColumn Width="10px">
+                                <GridCommandButton Command="Edit" Icon="@SvgIcon.Pencil" ThemeColor="@ThemeConstants.Button.ThemeColor.Primary"></GridCommandButton>
+                                <GridCommandButton Command="Delete" Icon="@SvgIcon.Trash"></GridCommandButton>
+                            </GridCommandColumn>
+                        </GridColumns>
+
+                    </TelerikGrid>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+
+    private TelerikGrid<PeopleDto> GridRef { get; set; }
+    bool ExportAllPages { get; set; }
+
+    private MemoryStream exportedExcelStream { get; set; }
+
+    private async Task GetTheDataAsAStream()
+    {
+        MemoryStream finalizedStream = await GridRef.ExportToExcelAsync();
+
+        exportedExcelStream = new MemoryStream(finalizedStream.ToArray());
+    }
+    public async Task DeleteHandler(GridCommandEventArgs args)
+    {
+        // Obtener el objeto PeopleDto de la fila seleccionada
+        PeopleDto person = args.Item as PeopleDto;
+
+        if (person != null)
+        {
+            var target = personas.FirstOrDefault(p => p.Id == person.Id);
+
+            if (target != null)
+            {
+                personas.Remove(target);
+                StateHasChanged();  // Actualiza la interfaz de usuario
+
+                // Realizar solicitud HTTP para eliminar el registro del servidor
+                var deleteUrl = $"{baseApiUrl}/Peoples/{person.Id}"; //llama a la api
+                var response = await Http.DeleteAsync(deleteUrl);
+
+                // Verifica que la eliminación en el servidor fue exitosa
+                if (response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine($"Persona con Id {person.Id} eliminada exitosamente.");
+                }
+                else
+                {
+                    // Si la solicitud falla, puedes manejar el error aquí
+                    Console.WriteLine($"Error al eliminar la persona con Id {person.Id}");
+                }
+            }
+        }
+    }
+
+    public async Task CreateHandler(GridCommandEventArgs args)
+    {
+
+    }
+    public async Task UpdateHandler(GridCommandEventArgs args)
+    {
+
+    }
+
+
+    private int id { get; set; } = 0;
+    private List<PeopleDto> personas { get; set; }
+    private string errorMessage = "";
+    private string baseApiUrl = "https://localhost:7065/api";
+
+    protected async Task MostrarDatos()
+    {
+        personas = await GetPersonasById(id);
+    }
+
+    private async Task<List<PeopleDto>> GetPersonasById(int id)
+    {
+        List<PeopleDto> personas = new();
+        HttpResponseMessage response;
+        response = (@id == 0) ? await Http.GetAsync($"{baseApiUrl}/Peoples") : await Http.GetAsync($"{baseApiUrl}/Peoples/{id}");
+        if (response.IsSuccessStatusCode)
+        {
+                var json = await response.Content.ReadAsStringAsync();
+                var jsonDocument = JsonDocument.Parse(json);
+                var values = jsonDocument.RootElement.GetProperty("$values");
+            if (id == 0)
+            {
+
+                // Deserializar `$values` en una lista de PeopleDto
+                personas = JsonSerializer.Deserialize<List<PeopleDto>>(values.ToString(), new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+            }
+            else
+            {
+                personas = JsonSerializer.Deserialize<List<PeopleDto>>(values.ToString(), new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+                // personas = new List<PeopleDto> { personasola };
+            }
+        }
+        else
+        {
+            errorMessage = $"Error HTTP: {response.StatusCode}";
+            personas = new List<PeopleDto>();
+        }
+        return personas;
+    }
+}

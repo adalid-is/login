@@ -1,0 +1,129 @@
+﻿@page "/login"
+
+<div class="login-container">
+    <div class="login-card">
+        <img src="/imagen/logo.png" alt="Logo" class="logo" />
+        <div class="avatar">
+        </div>
+        <h2>Welcome back!</h2>
+
+        <form>
+            <label for="userId" class="form-label">Email</label>
+            <TelerikTextBox Id="userId" Placeholder="Email" @bind-Value="@UserName" Class="form-input" />
+
+            <label for="password" class="form-label">Password</label>
+            <TelerikTextBox Id="password" Placeholder="Password" Password="true" @bind-Value="@Password" Class="form-input" />
+
+            <TelerikButton Id="commandSubmit" Icon="@SvgIcon.Login" OnClick="@OnLogin" Class="btn-login">
+                Log in
+            </TelerikButton>
+        </form>
+
+        
+    </div>
+</div>
+
+@code {
+    private string UserName { get; set; }
+    private string Password { get; set; }
+
+    private void OnLogin()
+    {
+        // Lógica de inicio de sesión
+        Console.WriteLine($"Usuario: {UserName}, Contraseña: {Password}");
+    }
+}
+   
+      <style>
+    /* Contenedor principal */
+    .login-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: url('/imagen/fondo.jpg') no-repeat center center fixed;
+        background-size: cover;
+    }
+
+    /* Tarjeta de inicio de sesión */
+    .login-card {
+        background-color: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        width: 350px;
+    }
+
+    /* Logo */
+    .logo {
+        width: 100px;
+        margin-bottom: 20px;
+      
+    }
+
+    /* Avatar */
+    .avatar img {
+        width: 60px
+        height: 60px;
+        border-radius: 50%;
+        margin-bottom: 20px;
+    }
+
+    /* Títulos */
+    h2 {
+        font-family: Arial, sans-serif;
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    /* Etiquetas */
+    .form-label {
+        display: block;
+        text-align: left;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #555;
+    }
+
+    /* Inputs */
+    .form-input {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    /* Botón */
+    .btn-login {
+        width: 100%;
+        background-color: #5f1319;
+        color: white;
+        padding: 10px;
+        font-size: 1rem;
+        border-radius: #7f0010;
+        text-transform: uppercase;
+        font-weight: bold;
+        transition: background-color 0.3s;
+    }
+
+        .btn-login:hover {
+            background-color: #5f1319;
+        }
+
+    /* Opciones */
+    .options {
+        margin-top: 15px;
+    }
+
+    .forgot-password,
+    .register-link {
+        color: #ff6b6b;
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+
+        .forgot-password:hover,
+        .register-link:hover {
+            text-decoration: underline;
+        }
+        </style>
